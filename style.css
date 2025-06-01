@@ -15,7 +15,7 @@ html, body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--dark-bg);
     color: var(--text-color);
-    background-image: url("https://www.transparenttextures.com/patterns/cartographer.png");
+    background-image: "cartographer.avif";
     background-size: auto;
     background-attachment: fixed;
     min-height: 100vh;
