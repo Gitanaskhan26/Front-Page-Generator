@@ -1,4 +1,4 @@
-:root {More actions
+:root {
     --dark-bg: #010114;
     --card-bg: rgba(0, 0, 10, 0.3);
     --input-bg: rgba(255, 255, 255, 0.02);
@@ -66,17 +66,9 @@ h1 {
         }
         @keyframes fadeIn {
     to { opacity: 1; }
-   
-        }
+}
 
-
-
-
-
-
-
-
-
+        
 /* Option group for radio buttons */
 .option-group {
     display: flex;
@@ -249,11 +241,11 @@ footer a {
 }
 
 footer a:hover {
-    color: #ffffff;
+    color: var(--accent-color);
 }
 
 footer .highlight {
-    color: #ffffff;
+    color: var(--accent-color);
     font-size: 1em;
 }
 
