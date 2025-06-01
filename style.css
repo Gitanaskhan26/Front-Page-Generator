@@ -1,4 +1,4 @@
-:root {
+:root {More actions
     --dark-bg: #010114;
     --card-bg: rgba(0, 0, 10, 0.3);
     --input-bg: rgba(255, 255, 255, 0.02);
@@ -68,6 +68,14 @@ h1 {
     to { opacity: 1; }
    
         }
+
+
+
+
+
+
+
+
 
 /* Option group for radio buttons */
 .option-group {
