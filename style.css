@@ -243,11 +243,11 @@ footer a {
 }
 
 footer a:hover {
-    color: var(--accent-color);
+    color: #ffffff;
 }
 
 footer .highlight {
-    color: var(--accent-color);
+    color: #ffffff;
     font-size: 1em;
 }
 
