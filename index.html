@@ -3,16 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Generate lab report front pages with department, subject, year, and faculty details. Quick and customizable form-based generator.">
     <link rel="stylesheet" href="style.css" />
-    <link rel="icon" type="image/x-icon" href="App_favicon.png" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="App_favicon.png" as="icon-image"/>
+    <script type="module">
+    import * as PDFLib from 'https://cdn.skypack.dev/pdf-lib';
+    window.PDFLib = PDFLib;
+  </script
+    <!--<link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <!--<link rel="preload" href="https://www.transparenttextures.com/patterns/cartographer.png" as="image">--!>
     <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/2.0.18/24/outline/heroicons.min.css" />-->
     <title>Lab Report Front Page Generator</title>
   </head>
   <body>
     <div class="container">
       <h1>Front Page Generator</h1>
-      <button onclick="window.location.href='index2.html';"> Go to Assignment Front Page Generator</button>
+      <button onclick="window.location.href='index2.html';" class="nav-btn">Go to Assignment Front Page Generator</button>
+
 
       <form id="templateForm">
           <label for="name">Your Name:</label>
@@ -175,11 +184,22 @@
         | Modified by
         <a href="https://github.com/abdul-rahman-1" target="_blank" class="highlight">Abdul Rahman</a>
       </p>
-      <p id="pdfCounterDisplay">PDFs Generated: <span id="pdfCounter">0</span></p>
+      <!--<p id="pdfCounterDisplay">PDFs Generated: <span id="pdfCounter">0</span></p>!-->
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-    <script src="Script_LabReport.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
+    <script src="Script_LabReport.js" defer></script>
+    <script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.body.style.backgroundImage = "url('https://www.transparenttextures.com/patterns/cartographer.png')";
+      document.body.style.backgroundRepeat = "repeat";
+      document.body.style.backgroundAttachment = "fixed";
+      document.body.style.backgroundPosition = "center center";
+      document.body.style.backgroundSize = "auto";
+    }, 0);
+  });
+</script>
   </body>
 </html>

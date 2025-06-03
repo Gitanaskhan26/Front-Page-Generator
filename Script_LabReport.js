@@ -4,244 +4,194 @@ const contents="JVBERi0xLjcKJeLjz9MKOSAwIG9iago8PAovVHlwZSAvRm9udERlc2NyaXB0b3IK
 window.jsPDF = window.jspdf.jsPDF;
 
 document.addEventListener("DOMContentLoaded", function () {
-function generatePDF() {
-    const name = document.getElementById("name").value;
-    const roll = document.getElementById("enrollment").value;
-    const department= document.getElementById("department").value;
-    let submittedTo = document.getElementById("faculty").value; // Updated to take Faculty text
-    let labInstructor = document.getElementById("labInstructor").value; // Updated to take Lab Instructor text
-    const section = document.getElementById("section").value; // Get selected section
-    const group = document.getElementById("group").value; // Get selected group
-    const year = document.getElementById("Year").value; // Get selected year
-    const semester = document.getElementById("Semester").value; // Get selected Semester
-    let subjectName = "";
-    let facultyJobTitle = document.getElementById("facultyJobTitle").value;
-    let InstructorTile = document.getElementById("InstructorTitle").value;
-    let subjectCode=document.getElementById("subjectCode").value;
-    subjectName = document.getElementById("SUBJECTNAME").value;
-    const watermark=document.getElementById("watermark").value;    // Get the subject code, using the custom value if 'Other' is selected
-    if (subjectCode === "Other") {
-        subjectCode = document.getElementById("customSubjectCode").value;
-        document.getElementById("SUBJECTNAME").value="Other";
-        subjectName = document.getElementById("customSubjectName").value;
-    }
-    // Determine subject name based on subject code
-    const doc = new jsPDF();
-    if(watermark=='true'){
-        const watermarkSize= doc.internal.pageSize.getWidth()-40;
-        const x=(doc.internal.pageSize.getWidth()-watermarkSize) / 2;
-        const y= (doc.internal.pageSize.getHeight() -watermarkSize) / 2;
-        doc.setGState(new doc.GState({ opacity: 0.1 }));
-        doc.addImage(logo, 'PNG', x,y,watermarkSize, watermarkSize, '', 'FAST');
-    doc.setGState(new doc.GState({ opacity: 1 }));
-    }
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 10; // Set margin for left and right
-    const logoWidth = pageWidth - 2 * margin;
-    const aspectRatio = 683 / 119; // Aspect ratio of the logo
-    const logoHeight = logoWidth / aspectRatio;
-    const gap = 40;
-    
-    // Set initial Y position and add logo
-    let currentY = 30; // Initial Y position for logo
-    doc.addImage(IULlogo, "PNG", margin, currentY, logoWidth, logoHeight);
-    
-    // Add Space Above Department Title
-    currentY += logoHeight + gap; // Add gap units of space after the logo
-    doc.setFont("times", "bold"); // Set font to Cambria for department
-    doc.setFontSize(28);// Wrap text and split into multiple lines if necessary
-    
-    const splitDepartmentText = doc.splitTextToSize(department, pageWidth - 20);
-    for (let i = 0; i < splitDepartmentText.length; i++) {
-        doc.text(splitDepartmentText[i], pageWidth / 2, currentY, null, null, "center");
-        currentY += 10; // Move down for the next line if needed
-    }
-    // Add Space Above Session
-    doc.setFont("times", "normal");
-    
-    currentY += gap-7.5; // Add space before session
-    doc.setFontSize(24); // You can adjust the font size if needed
-    doc.text("Lab Report", pageWidth / 2, currentY, null, null, "center");
-    
-    // Add Space Above Session Year
-    currentY += 10; // Add space before session year
-    doc.setFontSize(24); // Set font size for session year
-    doc.text("Session (2024-2025)", pageWidth / 2, currentY, null, null, "center");
-    
-    // Add Space Above Subject Title
-    doc.setFont("times", "bold");
-    currentY += gap-7.5; // Add space before subject title
-    doc.setFontSize(27); // Font size for subject title
-    doc.text(`${subjectName}`, pageWidth / 2, currentY, null, null, "center");
-    currentY += 10; // Add space for the next line
-    doc.text(subjectCode, pageWidth / 2, currentY, null, null, "center"); // Updated subject code
-    doc.setFont("times", "normal");
-    
-    // Submitted By Section - Bottom Left Alignment
-    doc.setFont("times", "normal");
-    doc.setFontSize(15);
-    const submittedByY = 245;
-    doc.text("Submitted By:", 20, submittedByY);
-    doc.setFont("times", "bold");
-    doc.text(`${name}`, 20, submittedByY + 10);
-    doc.setFont("times", "normal");
-    doc.text(`Roll No.: ${roll}`, 20, submittedByY + 17.5);
-    doc.setFont("times", "bold");
-    doc.text(`CSE - ${section} (Group ${group})`, 20, submittedByY + 25); // Updated to include section and group
-    doc.setFont("times", "normal");
-    doc.text(`Semester / Year- ${semester}/${year}`, 20, submittedByY + 32.5);
-    
-    // Submitted To Section - Bottom Right Alignment
-    const submittedToY = 245;
-    const submittedToX = 140;
-    doc.text("Submitted To:", submittedToX, submittedToY);
-    doc.setFont("times", "bold");
-    doc.text(submittedTo, submittedToX, submittedToY + 10); // Updated to take Faculty text
-    doc.setFont("times", "normal");
-    doc.text(`(${facultyJobTitle})`, submittedToX, submittedToY + 17.5); // Updated to take Faculty Job Title
-    doc.setFont("times", "bold");
-    doc.text(`${labInstructor}`, submittedToX, submittedToY + 25); // Updated to take Lab Instructor text
-    doc.setFont("times", "normal");
-    doc.text(`(${InstructorTile})`, submittedToX, submittedToY + 32.5);
-    const contentsPdfUrl = contents;
+    const generateBtn = document.getElementById("generateBtn");
+    const subjectCodeSelect = document.getElementById("subjectCode");
+    const counterElement = document.getElementById('pdfCounter');
 
-    addPagesFromAnotherPDF(doc, contentsPdfUrl);
-    // Save the PDF
-    // doc.save(`${name}_Lab_Report_Front_Page.pdf`); 
-}
-function fillDetails() {
-    const subjectCode = document.getElementById("subjectCode").value;
-    const section = document.getElementById("section").value;
-    const group = document.getElementById("group").value;
-    const year = document.getElementById("Year").value; // Get selected year
-    const semester = document.getElementById("Semester").value; // Get selected Semester
-    let submittedTo = "";
-    let labInstructor = "";
-    let facultyJobTitle="Assistant Professor";
-if (subjectCode === "CS271" && section === "A" && group === "1"&& year=="II" && semester=="III" ) {
-    submittedTo= "Dr. Sheeba Praveen";facultyJobTitle="Associate Professor";
-    labInstructor="Mariam Daood"; // Faculty for CS271, section A, group 1
-    document.getElementById("faculty").value = `${submittedTo}`;
-    document.getElementById("labInstructor").value = `${labInstructor}`;
-    InstructorTile = document.getElementById("InstructorTitle").value="Lab Instructor";
-} else if (subjectCode === "CS271" && section === "A" && group === "2" && year=="II" && semester=="III" ) {
-    submittedTo= "Dr. Sheeba Praveen";facultyJobTitle="Associate Professor";
-    labInstructor="Qudsia Shahab"; // Faculty for CS271, section A, group 2
-    document.getElementById("faculty").value = `${submittedTo}`;
-    document.getElementById("labInstructor").value = `${labInstructor}`;
-    InstructorTile = document.getElementById("InstructorTitle").value="Lab Instructor";
-} else if (subjectCode === "CS208" && section === "A" && year=="II" && semester=="III" ) {
-    submittedTo= "Ajaz Hussain Warsi";
-    labInstructor="Riajuddin Khan"; // Faculty for CS271, section A, group 2
-    InstructorTile = document.getElementById("InstructorTitle").value="Sr. Instructor";
-    document.getElementById("faculty").value = `${submittedTo}`;
-    document.getElementById("labInstructor").value = `${labInstructor}`;
-}else if (subjectCode === "CS272" && section === "A" && group === "1" && year=="II" && semester=="III" ) {
-    submittedTo= "Anum Kamal";
-    labInstructor="Mohammad Aman"; // Faculty for CS271, section A, group 2
-    document.getElementById("faculty").value = `${submittedTo}`;
-    document.getElementById("labInstructor").value = `${labInstructor}`;
-    InstructorTile = document.getElementById("InstructorTitle").value="Lab Instructor";
+    let pdfCount = localStorage.getItem('pdfCount') || 0;
+    if (counterElement) counterElement.textContent = pdfCount;
 
-} else if (subjectCode === "CS272" && section === "A" && group === "2" && year=="II" && semester=="III" ) {
-    submittedTo= "Noorishta Hashmi";
-    labInstructor="Afza Firdous"; // Faculty for CS271, section A, group 2
-    document.getElementById("faculty").value = `${submittedTo}`;
-    document.getElementById("labInstructor").value = `${labInstructor}`;
-    InstructorTile = document.getElementById("InstructorTitle").value="Lab Instructor";
-} else {
-}
-document.getElementById("facultyJobTitle").value = `${facultyJobTitle}`;
-let subjectName="";
-if(year=="II" && semester=="III"){
-switch (subjectCode) {
-    case "CS208":
-        subjectName = "Data Structures Using C LAB";
-        break;
-    case "CS271":
-        subjectName = "Object Oriented Concepts Using Java LAB";
-        break;
-    case "CS272":
-        subjectName = "Python Programming LAB";
-        break;
-    case "CS289":
-        subjectName = "Web Scripting LAB";
-        break;
-    default:
-        subjectName = document.getElementById("SUBJECTNAME").value;
-        break;
-}
-}
-document.getElementById("SUBJECTNAME").value=`${subjectName}`;
-}
-// Call the function to generate the PDF when needed (e.g., on button click)
-document.getElementById("generateBtn").addEventListener("click", generatePDF);
-document.getElementById("subjectCode").addEventListener("change", fillDetails);
-document.getElementById("subjectCode").addEventListener("change", function () {
-    const subjectCode = document.getElementById("subjectCode").value;
-    const customSubjectCodeContainer = document.getElementById("customSubjectCodeContainer");
-    
-    if (subjectCode === "Other") {
-        customSubjectCodeContainer.style.display = "block"; // Show the custom subject code input
-        customSubjectNameContainer.style.display = "block"; // Show the custom subject code input
-        document.getElementById("SUBJECTNAME").value="Other";
-        document.getElementById("faculty").value="";
-        document.getElementById("labInstructor").value="Other";
-    } else {
-        customSubjectCodeContainer.style.display = "none"; // Hide the custom subject code input
-        customSubjectNameContainer.style.display = "none"; // Hide the custom subject code input
+    generateBtn.addEventListener("click", () => {
+        generatePDF();
+        // Increment and update counter
+        pdfCount++;
+        localStorage.setItem('pdfCount', pdfCount);
+        if (counterElement) counterElement.textContent = pdfCount;
+    });
+
+    subjectCodeSelect.addEventListener("change", () => {
+        const code = subjectCodeSelect.value;
+        const codeContainer = document.getElementById("customSubjectCodeContainer");
+        const nameContainer = document.getElementById("customSubjectNameContainer");
+
+        const showCustom = code === "Other";
+        codeContainer.style.display = showCustom ? "block" : "none";
+        nameContainer.style.display = showCustom ? "block" : "none";
+
+        if (showCustom) {
+            document.getElementById("SUBJECTNAME").value = "Other";
+            document.getElementById("faculty").value = "";
+            document.getElementById("labInstructor").value = "Other";
+        }
+
+        fillDetails(); // Populate the rest
+    });
+
+    function fillDetails() {
+        const subjectCode = subjectCodeSelect.value;
+        const section = document.getElementById("section").value;
+        const group = document.getElementById("group").value;
+        const year = document.getElementById("Year").value;
+        const semester = document.getElementById("Semester").value;
+
+        const facultyField = document.getElementById("faculty");
+        const labField = document.getElementById("labInstructor");
+        const titleField = document.getElementById("facultyJobTitle");
+        const labTitleField = document.getElementById("InstructorTitle");
+        const subjectField = document.getElementById("SUBJECTNAME");
+
+        let faculty = "", lab = "", title = "Assistant Professor", labTitle = "Lab Instructor", subject = "";
+
+        const map = {
+            "CS271-A-1-III-II": { f: "Dr. Sheeba Praveen", t: "Associate Professor", l: "Mariam Daood" },
+            "CS271-A-2-III-II": { f: "Dr. Sheeba Praveen", t: "Associate Professor", l: "Qudsia Shahab" },
+            "CS208-A--III-II": { f: "Ajaz Hussain Warsi", l: "Riajuddin Khan", labTitle: "Sr. Instructor" },
+            "CS272-A-1-III-II": { f: "Anum Kamal", l: "Mohammad Aman" },
+            "CS272-A-2-III-II": { f: "Noorishta Hashmi", l: "Afza Firdous" }
+        };
+
+        const key = `${subjectCode}-${section}-${group}-${semester}-${year}`;
+        const entry = map[key] || map[`${subjectCode}-${section}--${semester}-${year}`];
+
+        if (entry) {
+            faculty = entry.f;
+            lab = entry.l;
+            title = entry.t || title;
+            labTitle = entry.labTitle || labTitle;
+        }
+
+        facultyField.value = faculty;
+        labField.value = lab;
+        titleField.value = title;
+        labTitleField.value = labTitle;
+
+        if (year === "II" && semester === "III") {
+            const subjectNames = {
+                "CS208": "Data Structures Using C LAB",
+                "CS271": "Object Oriented Concepts Using Java LAB",
+                "CS272": "Python Programming LAB",
+                "CS289": "Web Scripting LAB"
+            };
+            subject = subjectNames[subjectCode] || subjectField.value;
+        }
+
+        subjectField.value = subject;
     }
 
-    fillDetails(); // Call fillDetails to update other related fields if necessary
-});
+    async function generatePDF() {
+        const doc = new jsPDF();
 
-async function addPagesFromAnotherPDF(jspdfInstance, contentsPdfUrl) {
-    // Export the modified jsPDF document to a blob
-    const generatedPdfBytes = jspdfInstance.output('arraybuffer');
-    const mainPdfDoc = await PDFLib.PDFDocument.load(generatedPdfBytes);
+        const name = document.getElementById("name").value;
+        const roll = document.getElementById("enrollment").value;
+        const department = document.getElementById("department").value;
+        let subjectCode = document.getElementById("subjectCode").value;
+        let subjectName = document.getElementById("SUBJECTNAME").value;
+        const watermark = document.getElementById("watermark").value === "true";
 
-    // Base64 string of contents.pdf (replace with your actual Base64 string)
-    const base64Content = contentsPdfUrl;  // Place your actual Base64 string here
-    const contentsPdfBytes = Uint8Array.from(atob(base64Content), c => c.charCodeAt(0));
+        if (subjectCode === "Other") {
+            subjectCode = document.getElementById("customSubjectCode").value;
+            subjectName = document.getElementById("customSubjectName").value;
+        }
 
-    const contentsPdfDoc = await PDFLib.PDFDocument.load(contentsPdfBytes);
+        // Optional: Add watermark
+        if (watermark && typeof logo !== 'undefined') {
+            const watermarkSize = doc.internal.pageSize.getWidth() - 40;
+            const x = (doc.internal.pageSize.getWidth() - watermarkSize) / 2;
+            const y = (doc.internal.pageSize.getHeight() - watermarkSize) / 2;
+            doc.setGState(new doc.GState({ opacity: 0.1 }));
+            doc.addImage(logo, 'PNG', x, y, watermarkSize, watermarkSize, '', 'FAST');
+            doc.setGState(new doc.GState({ opacity: 1 }));
+        }
 
-    // Copy pages from contents.pdf into the main PDF
-    const pages = await mainPdfDoc.copyPages(contentsPdfDoc, contentsPdfDoc.getPageIndices());
-    pages.forEach(page => mainPdfDoc.addPage(page));
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const margin = 10;
+        const logoWidth = pageWidth - 2 * margin;
+        const logoHeight = logoWidth / (683 / 119);
+        const gap = 40;
+        let y = 30;
 
-    // Save and download the merged PDF
-    const mergedPdfBytes = await mainPdfDoc.save();
-    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${document.getElementById("name").value}\'s${document.getElementById("subjectCode").value}.pdf`;
-    // link.download = 'MergedDocument.pdf';
-    link.click();
-    // link.click();
-}
+        // Top logo
+        if (typeof IULlogo !== 'undefined') {
+            doc.addImage(IULlogo, "PNG", margin, y, logoWidth, logoHeight);
+            y += logoHeight + gap;
+        }
 
-// PDF Generate Counter Logic
-let pdfCount = localStorage.getItem('pdfCount') || 0;
-const counterElement = document.getElementById('pdfCounter');
-if (counterElement) {
-  counterElement.textContent = pdfCount;
-}
+        doc.setFont("times", "bold").setFontSize(28);
+        doc.splitTextToSize(department, pageWidth - 20).forEach(line => {
+            doc.text(line, pageWidth / 2, y, { align: "center" });
+            y += 10;
+        });
 
-const generateBtn = document.getElementById('generateBtn');
-if (generateBtn) {
-  generateBtn.addEventListener('click', () => {
-    // Run your PDF generation logic here...
+        y += gap - 7.5;
+        doc.setFontSize(24).text("Lab Report", pageWidth / 2, y, { align: "center" });
+        y += 10;
+        doc.text("Session (2024-2025)", pageWidth / 2, y, { align: "center" });
 
-    // Increment and store counter
-    pdfCount++;
-    localStorage.setItem('pdfCount', pdfCount);
-    if (counterElement) {
-      counterElement.textContent = pdfCount;
+        y += gap - 7.5;
+        doc.setFontSize(27).text(subjectName, pageWidth / 2, y, { align: "center" });
+        y += 10;
+        doc.text(subjectCode, pageWidth / 2, y, { align: "center" });
+
+        const section = document.getElementById("section").value;
+        const group = document.getElementById("group").value;
+        const year = document.getElementById("Year").value;
+        const semester = document.getElementById("Semester").value;
+        const submittedTo = document.getElementById("faculty").value;
+        const facultyTitle = document.getElementById("facultyJobTitle").value;
+        const labInstructor = document.getElementById("labInstructor").value;
+        const labTitle = document.getElementById("InstructorTitle").value;
+
+        const leftX = 20, rightX = 140, bottomY = 245;
+
+        doc.setFontSize(15).setFont("times", "normal").text("Submitted By:", leftX, bottomY);
+        doc.setFont("times", "bold")
+            .text(name, leftX, bottomY + 10)
+            .setFont("times", "normal")
+            .text(`Roll No.: ${roll}`, leftX, bottomY + 17.5)
+            .setFont("times", "bold")
+            .text(`CSE - ${section} (Group ${group})`, leftX, bottomY + 25)
+            .setFont("times", "normal")
+            .text(`Semester / Year- ${semester}/${year}`, leftX, bottomY + 32.5);
+
+        doc.setFont("times", "normal").text("Submitted To:", rightX, bottomY);
+        doc.setFont("times", "bold")
+            .text(submittedTo, rightX, bottomY + 10)
+            .setFont("times", "normal")
+            .text(`(${facultyTitle})`, rightX, bottomY + 17.5)
+            .setFont("times", "bold")
+            .text(labInstructor, rightX, bottomY + 25)
+            .setFont("times", "normal")
+            .text(`(${labTitle})`, rightX, bottomY + 32.5);
+
+        const contentsPdfUrl = contents; // Base64 string
+
+        await addPagesFromAnotherPDF(doc, contentsPdfUrl, name, subjectCode);
     }
-  });
-}
-// Attach event listener AFTER DOM is ready
-  document.getElementById("generateBtn").addEventListener("click", generatePDF);
+
+    async function addPagesFromAnotherPDF(jspdfInstance, contentsPdfUrl, studentName, subjectCode) {
+        const generatedBytes = jspdfInstance.output('arraybuffer');
+        const mainDoc = await PDFLib.PDFDocument.load(generatedBytes);
+        const contentsBytes = Uint8Array.from(atob(contentsPdfUrl), c => c.charCodeAt(0));
+        const contentsDoc = await PDFLib.PDFDocument.load(contentsBytes);
+
+        const pages = await mainDoc.copyPages(contentsDoc, contentsDoc.getPageIndices());
+        pages.forEach(page => mainDoc.addPage(page));
+
+        const mergedBytes = await mainDoc.save();
+        const blob = new Blob([mergedBytes], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${studentName}_${subjectCode}_Lab_Report.pdf`;
+        link.click();
+    }
 });
